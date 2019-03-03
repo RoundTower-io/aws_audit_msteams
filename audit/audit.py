@@ -12,114 +12,52 @@ import boto3
 import json
 import logging
 from urllib2 import Request, urlopen, URLError, HTTPError
-from botocore.exceptions import ClientError
 
-AWS_REGIONS = ['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2']
+AWS_REGIONS = [ 'us-east-1', 'us-east-2', 'us-west-1', 'us-west-2']
 AWS_ENGINEERING_ID = "375301133253"
 IDS = [AWS_ENGINEERING_ID]
 
 # noinspection PyPep8
+HOOK_URL = 'https://outlook.office.com/webhook/846bd1f6-1c25-49e3-ba96-d07b2583f5d4@6a8ff3cc-d3cc-4944-9654-edad9087dfdc/IncomingWebhook/98d3a167f5104819b229a1fb18ffe7f2/edfddb3f-3fff-4646-8b9a-eb854503b582'
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def send_to_teams(msg):
-    # Replace sender@example.com with your "From" address.
-    # This address must be verified with Amazon SES.
-    SENDER = "Sender Name <lambda@aws.roundtower.io.com>"
-
-    # Replace recipient@example.com with a "To" address. If your account
-    # is still in the sandbox, this address must be verified.
-    RECIPIENT = "tennis.smith@roundtower.com"
-
-    # Specify a configuration set. If you do not want to use a configuration
-    # set, comment the following variable, and the
-    # ConfigurationSetName=CONFIGURATION_SET argument below.
-    CONFIGURATION_SET = "ConfigSet"
-
-    # If necessary, replace us-west-2 with the AWS Region you're using for Amazon SES.
-    AWS_REGION = "us-east-1"
-
-    # The subject line for the email.
-    SUBJECT = "Amazon SES Test (SDK for Python)"
-
-    # The email body for recipients with non-HTML email clients.
-    # BODY_TEXT = ("Amazon SES Test (Python)\r\n"
-    #              "This email was sent with Amazon SES using the "
-    #              "AWS SDK for Python (Boto)."
-    #              )
-    BODY_TEXT = msg
-
-
-    # The HTML body of the email.
-    BODY_HTML = """<html>
-    <head></head>
-    <body>
-      <h1>Amazon SES Test (SDK for Python)</h1>
-      <p>This email was sent with
-        <a href='https://aws.amazon.com/ses/'>Amazon SES</a> using the
-        <a href='https://aws.amazon.com/sdk-for-python/'>
-          AWS SDK for Python (Boto)</a>.</p>
-    </body>
-    </html>
-                """
-
-    # The character encoding for the email.
-    CHARSET = "UTF-8"
-
-    # Create a new SES resource and specify a region.
-    client = boto3.client('ses', region_name=AWS_REGION)
-
-    # Try to send the email.
+def post_to_slack(msg):
+    # uncomment to debug
+    print(msg)
+    #return
+    teams_message = {
+        "@context": "https://schema.org/extensions",
+        "@type": "MessageCard",
+        "themeColor": "0072C6",
+        "title": "CADO AWS Audit Snapshot",
+        "text": "<pre>%s</pre>" % msg
+    }
+    req = Request(HOOK_URL, json.dumps(teams_message))
     try:
-        # Provide the contents of the email.
-        response = client.send_email(
-            Destination={
-                'ToAddresses': [
-                    RECIPIENT,
-                ],
-            },
-            Message={
-                'Body': {
-                    'Html': {
-                        'Charset': CHARSET,
-                        'Data': BODY_HTML,
-                    },
-                    'Text': {
-                        'Charset': CHARSET,
-                        'Data': BODY_TEXT,
-                    },
-                },
-                'Subject': {
-                    'Charset': CHARSET,
-                    'Data': SUBJECT,
-                },
-            },
-            Source=SENDER,
-            # If you are not using a configuration set, comment or delete the
-            # following line
-            ConfigurationSetName=CONFIGURATION_SET,
-        )
-    # Display an error if something goes wrong.
-    except ClientError as e:
-        print(e.response['Error']['Message'])
-    else:
-        print("Email sent! Message ID:"),
-        print(response['MessageId'])
+        response = urlopen(req)
+        response.read()
+        #logger.info("Message posted to %s", teams_message['channel'])
+        logger.info("Message posted")
+    except HTTPError as e:
+        logger.error("Request failed: %d %s", e.code, e.reason)
+    except URLError as e:
+        logger.error("Server connection failed: %s", e.reason)
 
 
 # noinspection PyUnusedLocal
 def handler(event, context):
-    instances = ''
+    out_data = ""
     for region in AWS_REGIONS:
         client = boto3.client('ec2', region_name=region)
-        instances += post_by_vpc(ec2=client)
+        out_data = out_data + post_by_vpc(ec2=client)
 
-    workspaces = print_workspaces('AVAILABLE', 'us-east-1')
+    out_data = out_data + print_workspaces('AVAILABLE', 'us-east-1')
 
-    report = instances+workspaces
+    if len(out_data):
+        post_to_slack(out_data)
 
-    send_to_teams(report)
 
 # Uncomment to debug
 #handler("", "")

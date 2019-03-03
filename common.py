@@ -108,7 +108,7 @@ def post_by_vpc(ec2):
             continue
 
         region = ec2.meta.region_name
-        fp.write(u'```\n')
+        fp.write(u'\n')
         fp.write(HEADER_TEMPLATE.format(vpc_name, region, vpc_id.replace('vpc-', '')))
         fp.write(u'\n')
         fp.write(BODY_TEMPLATE.format(NAME='Name',
@@ -129,7 +129,6 @@ def post_by_vpc(ec2):
                                           IMG=instance[2],
                                           LAUNCHED=instance[3],
                                           TYPE=instance[4]))
-        fp.write(u'```\n')
     vpc_out = fp.getvalue()
     fp.close()
     return vpc_out
@@ -139,7 +138,7 @@ def print_workspaces(status, region):
     fp = StringIO()
     found = 0
 
-    fp.write(u'```\n')
+    fp.write(u'\n')
     fp.write(u'Active Workspaces in %s\n' % region)
     fp.write(u'------------------------------\n')
     ws = boto3.client("workspaces", region_name=region)
@@ -157,7 +156,6 @@ def print_workspaces(status, region):
         fp.close()
         return ""
 
-    fp.write(u'```\n')
     ws_out = fp.getvalue()
     fp.close()
     return ws_out
