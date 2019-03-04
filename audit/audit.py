@@ -18,7 +18,7 @@ AWS_ENGINEERING_ID = "375301133253"
 IDS = [AWS_ENGINEERING_ID]
 
 # noinspection PyPep8
-HOOK_URL = 'https://outlook.office.com/webhook/846bd1f6-1c25-49e3-ba96-d07b2583f5d4@6a8ff3cc-d3cc-4944-9654-edad9087dfdc/IncomingWebhook/98d3a167f5104819b229a1fb18ffe7f2/edfddb3f-3fff-4646-8b9a-eb854503b582'
+HOOK_URL = 'https://outlook.office.com/webhook/3d224b9f-a9a8-474e-9d62-6138e993a8a5@6a8ff3cc-d3cc-4944-9654-edad9087dfdc/IncomingWebhook/a6adac7f3b3541698f47a87246e04b39/edfddb3f-3fff-4646-8b9a-eb854503b582'
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
