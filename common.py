@@ -67,21 +67,6 @@ def get_sorted_vpc_entries_list(entries):
     return sorted(entry_list)
 
 
-def get_jump_box(reservations):
-    for r in reservations:
-        if "Tags" in r["Instances"][0]:
-            for t in r["Instances"][0]["Tags"]:
-                if t["Key"] == "NAME" and t["Value"] == "jump":
-                    return r["Instances"][0]
-
-
-def get_jump_dns(box):
-    if box:
-        for x in box["Tags"]:
-            if x["Key"] == 'route53_config':
-                return x["Value"].split(':')[1]
-
-
 def get_box_status(boxes, status="running"):
     box_list = []
     for box in boxes:
