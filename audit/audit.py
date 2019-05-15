@@ -23,7 +23,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-def post_to_slack(msg):
+def post_to_teams(msg):
     # uncomment to debug
     print(msg)
     #return
@@ -56,7 +56,7 @@ def handler(event, context):
     out_data = out_data + print_workspaces('AVAILABLE', 'us-east-1')
 
     if len(out_data):
-        post_to_slack(out_data)
+        post_to_teams(out_data)
 
 
 # Uncomment to debug
