@@ -28,7 +28,7 @@ example uses lambda_s3_monitor. There are 2 sections within `lambda_s3_monitor`.
 5. Copy the `Role ARN` (at the top of the page) and paste it in the `Role` field of the `lambda.json` file. This will associate your role with your lambda function.
     ```
     Example 
-      "role": "arn:aws:iam::375301133253:role/lambda_aws_audit_execution_role",
+      "role": "arn:aws:iam::123456789012:role/lambda_aws_audit_execution_role",
     ```
 
 # Upload to AWS
