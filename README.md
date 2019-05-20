@@ -6,7 +6,7 @@ To borrow from the AWS documentation, lambdas are an excellent way to "run your 
 
 In our case the lambda runs in response to a timer trigger.  The lambda is driven (generally daily) to detect, document, and report running assets on our AWS environment. The report output is sent to an MS Teams channel.   
 
-## How to use it
+# How to use it
 1. Create an "Incomming Webhook" connector in the MS Teams channel of your choice.  [Here](https://docs.microsoft.com/en-us/outlook/actionable-messages/send-via-connectors#sending-actionable-messages-via-office-365-connectors) is a writeup describing how to do that.
 2. Save the url that gets generated and use it for the HOOK_URL value in audit.py
 
