@@ -1,7 +1,12 @@
 # aws_audit_msteams
 An AWS Lambda function that posts output to MS Teams channels
 
-## How to use it
+# Why use an AWS Lambda function?
+To borrow from the AWS documentation, lambdas are an excellent way to "run your code in response to events and automatically manages the underlying compute resources for you".  There are no servers to set up.  It "just works" without having to worry about configuring any complex infrastructure.  
+
+In our case the lambda runs in response to a timer trigger.  The lambda is driven (generally daily) to detect, document, and report running assets on our AWS environment. The report output is sent to an MS Teams channel.   
+
+# How to use it
 1. Create an "Incomming Webhook" connector in the MS Teams channel of your choice.  [Here](https://docs.microsoft.com/en-us/outlook/actionable-messages/send-via-connectors#sending-actionable-messages-via-office-365-connectors) is a writeup describing how to do that.
 2. Save the url that gets generated and use it for the HOOK_URL value in audit.py
 
@@ -23,7 +28,7 @@ example uses lambda_s3_monitor. There are 2 sections within `lambda_s3_monitor`.
 5. Copy the `Role ARN` (at the top of the page) and paste it in the `Role` field of the `lambda.json` file. This will associate your role with your lambda function.
     ```
     Example 
-      "role": "arn:aws:iam::375301133253:role/lambda_aws_audit_execution_role",
+      "role": "arn:aws:iam::123456789012:role/lambda_aws_audit_execution_role",
     ```
 
 # Upload to AWS
