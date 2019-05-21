@@ -6,9 +6,6 @@ To borrow from the AWS documentation, lambdas are an excellent way to "run your 
 
 In our case the lambda runs in response to a timer trigger.  The lambda is driven (generally daily) to detect, document, and report running assets on our AWS environment. The report output is sent to an MS Teams channel.   
 
-# How to use it
-1. Create an "Incomming Webhook" connector in the MS Teams channel of your choice.  [Here](https://docs.microsoft.com/en-us/outlook/actionable-messages/send-via-connectors#sending-actionable-messages-via-office-365-connectors) is a writeup describing how to do that.
-2. Save the url that gets generated and use it for the HOOK_URL value in audit.py
 
 # What Are The Pre-Reqs?
 [lambda-uploader][1] - A utility that helps package and upload Python lambda functions to AWS
@@ -17,7 +14,15 @@ In our case the lambda runs in response to a timer trigger.  The lambda is drive
 pip install lambda-uploader
 ```
 
-# AWS Setup
+# Setup
+
+## AWS Systems Manager & Microsoft Teams 
+1. Create an "Incomming Webhook" connector in the MS Teams channel of your choice.  [Here](https://docs.microsoft.com/en-us/outlook/actionable-messages/send-via-connectors#sending-actionable-messages-via-office-365-connectors) is a writeup describing how to do that.
+2. Create a parameter store in [AWS Systems Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html) 
+3. Create a parameter in the parameter store and save the MS Teams webhook URL there.  
+
+
+## AWS IAM
 There needs to be an IAM ["Execution Role"][2] defined to allow our lambda role to execute. This
 example uses lambda_s3_monitor. There are 2 sections within `lambda_s3_monitor`.  One sets s3 permissions and the other defines runtime logging.
 
