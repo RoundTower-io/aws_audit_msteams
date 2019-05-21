@@ -1,5 +1,5 @@
 # aws_audit_msteams
-An AWS Lambda function that posts output to MS Teams channels
+An AWS Lambda function that posts information about running resources to MS Teams channels
 
 # Why use an AWS Lambda function?
 To borrow from the AWS documentation, lambdas are an excellent way to "run your code in response to events and automatically manages the underlying compute resources for you".  There are no servers to set up.  It "just works" without having to worry about configuring any complex infrastructure.  
