@@ -18,7 +18,7 @@ pip install lambda-uploader
 
 ## AWS Systems Manager & Microsoft Teams 
 1. Create an "Incomming Webhook" connector in the MS Teams channel of your choice.  [Here](https://docs.microsoft.com/en-us/outlook/actionable-messages/send-via-connectors#sending-actionable-messages-via-office-365-connectors) is a writeup describing how to do that.
-2. Create a parameter store in [AWS Systems Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html) 
+2. Go to the parameter store in [AWS Systems Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html) 
 3. Create a parameter in the parameter store and save the MS Teams webhook URL there.  
 
 
