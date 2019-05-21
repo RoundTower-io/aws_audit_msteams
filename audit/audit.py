@@ -17,23 +17,43 @@ from urllib2 import Request, urlopen, URLError, HTTPError
 from aws_xray_sdk.core import xray_recorder
 from aws_xray_sdk.core import patch
 
+# patch boto for xray usage
 patch(['boto3'])
 
-
 AWS_REGIONS = ['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2']
-AWS_ENGINEERING_ID = "375301133253"
-IDS = [AWS_ENGINEERING_ID]
 
-# noinspection PyPep8
-HOOK_URL = 'https://outlook.office.com/webhook/3d224b9f-a9a8-474e-9d62-6138e993a8a5@6a8ff3cc-d3cc-4944-9654-edad9087dfdc/IncomingWebhook/a6adac7f3b3541698f47a87246e04b39/edfddb3f-3fff-4646-8b9a-eb854503b582'
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+
+@xray_recorder.capture('get_systems_manager_parameter')
+def get_systems_manager_parameter(param_name):
+
+    # Create the SSM Client
+    ssm = boto3.client('ssm', region_name='us-east-2' )
+
+    # Get the requested parameter
+    response = ssm.get_parameters(
+        Names=[
+            param_name,
+        ],
+        WithDecryption=False
+    )
+
+    # Store the credentials in a variable
+    credentials = response['Parameters'][0]['Value']
+
+    xray_recorder.current_subsegment().put_annotation('credentials', credentials)
+
+    return credentials
+
+
 @xray_recorder.capture('post_to_teams')
 def post_to_teams(msg):
-    # uncomment to debug
+
+    # prints to cloudwatch
     print(msg)
-    #return
+
     teams_message = {
         "@context": "https://schema.org/extensions",
         "@type": "MessageCard",
@@ -41,7 +61,14 @@ def post_to_teams(msg):
         "title": "CADO AWS Audit Snapshot",
         "text": "<pre>%s</pre>" % msg
     }
-    req = Request(HOOK_URL, json.dumps(teams_message))
+
+    #
+    # We keep the webhook for our Teams URL in a Systems Manager parameter.
+    # This allows us to make the repo public without compromising security
+    #
+    hook_url = get_systems_manager_parameter("rtt-audit-output-teams-channel")
+
+    req = Request(hook_url, json.dumps(teams_message))
 
     try:
         response = urlopen(req)
