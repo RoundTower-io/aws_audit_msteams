@@ -11,6 +11,12 @@ from io import StringIO
 import datetime
 import boto3
 
+# X-ray instrumentation
+from aws_xray_sdk.core import xray_recorder
+from aws_xray_sdk.core import patch
+
+patch(['boto3'])
+
 NAME_LEN = 20
 INST_LEN = 23
 IMG_LEN = 25
@@ -21,6 +27,7 @@ BODY_TEMPLATE = u'{NAME:%d}{INST:%d}{IMG:%d}{LAUNCHED:%d}{TYPE:%d}\n' % \
                 (NAME_LEN, INST_LEN, IMG_LEN, LAUNCHED_LEN, TYPE_LEN)
 HEADER_TEMPLATE = u'Name: {0}  Region: {1}  VPC: {2}\n'
 
+@xray_recorder.capture('get_name_tag')
 def get_name_tag(tags):
     name = 'none'
     if tags:
@@ -30,6 +37,7 @@ def get_name_tag(tags):
     return name
 
 
+@xray_recorder.capture('get_sorted_vpc_list')
 def get_sorted_vpc_list(vpcs):
     vpc_list = []
     for v in vpcs['Vpcs']:
@@ -51,6 +59,7 @@ def get_sorted_vpc_list(vpcs):
     return sorted(vpc_list)
 
 
+@xray_recorder.capture('get_sorted_vpc_entries_list')
 def get_sorted_vpc_entries_list(entries):
     entry_list = []
     for reservation in entries:
@@ -67,6 +76,7 @@ def get_sorted_vpc_entries_list(entries):
     return sorted(entry_list)
 
 
+@xray_recorder.capture('get_box_status')
 def get_box_status(boxes, status="running"):
     box_list = []
     for box in boxes:
@@ -75,6 +85,7 @@ def get_box_status(boxes, status="running"):
     return box_list
 
 
+@xray_recorder.capture('post_by_vpc')
 def post_by_vpc(ec2):
     vpcs = ec2.describe_vpcs()
     fp = StringIO()
@@ -119,6 +130,7 @@ def post_by_vpc(ec2):
     return vpc_out
 
 
+@xray_recorder.capture('print_workspaces')
 def print_workspaces(status, region):
     fp = StringIO()
     found = 0

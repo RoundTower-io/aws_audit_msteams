@@ -13,7 +13,14 @@ import json
 import logging
 from urllib2 import Request, urlopen, URLError, HTTPError
 
-AWS_REGIONS = [ 'us-east-1', 'us-east-2', 'us-west-1', 'us-west-2']
+# X-ray instrumentation
+from aws_xray_sdk.core import xray_recorder
+from aws_xray_sdk.core import patch
+
+patch(['boto3'])
+
+
+AWS_REGIONS = ['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2']
 AWS_ENGINEERING_ID = "375301133253"
 IDS = [AWS_ENGINEERING_ID]
 
@@ -22,7 +29,7 @@ HOOK_URL = 'https://outlook.office.com/webhook/3d224b9f-a9a8-474e-9d62-6138e993a
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-
+@xray_recorder.capture('post_to_teams')
 def post_to_teams(msg):
     # uncomment to debug
     print(msg)
@@ -35,15 +42,17 @@ def post_to_teams(msg):
         "text": "<pre>%s</pre>" % msg
     }
     req = Request(HOOK_URL, json.dumps(teams_message))
+
     try:
         response = urlopen(req)
         response.read()
-        #logger.info("Message posted to %s", teams_message['channel'])
         logger.info("Message posted")
     except HTTPError as e:
         logger.error("Request failed: %d %s", e.code, e.reason)
+        xray_recorder.current_subsegment().put_annotation('http_error', e.code)
     except URLError as e:
         logger.error("Server connection failed: %s", e.reason)
+        xray_recorder.current_subsegment().put_annotation('url_error', e.reason)
 
 
 # noinspection PyUnusedLocal

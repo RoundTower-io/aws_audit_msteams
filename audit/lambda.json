@@ -4,7 +4,7 @@
   "region": "us-east-2",
   "handler": "audit.handler",
   "role": "arn:aws:iam::375301133253:role/lambda_aws_audit_execution_role",
-  "requirements": [],
+  "requirements": ["aws_xray_sdk"],
   "ignore": [
     "/*.pyc"
   ],
