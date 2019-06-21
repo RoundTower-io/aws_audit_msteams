@@ -8,6 +8,7 @@ Description:
 from __future__ import print_function
 from common import post_by_vpc
 from common import print_workspaces
+from common import print_unattached_volumes
 import boto3
 import json
 import logging
@@ -66,7 +67,8 @@ def post_to_teams(msg):
     # We keep the webhook for our Teams URL in a Systems Manager parameter.
     # This allows us to make the repo public without compromising security
     #
-    hook_url = get_systems_manager_parameter("rtt-audit-output-teams-channel")
+    #hook_url = get_systems_manager_parameter("rtt-audit-output-teams-channel")
+    hook_url = get_systems_manager_parameter("rtt-audit-output-test-channel")
     xray_recorder.current_subsegment().put_annotation('hook_url', hook_url)
 
     req = Request(hook_url, json.dumps(teams_message))
@@ -89,12 +91,10 @@ def handler(event, context):
     for region in AWS_REGIONS:
         client = boto3.client('ec2', region_name=region)
         out_data = out_data + post_by_vpc(ec2=client)
+        out_data = out_data + print_unattached_volumes(region)
 
     out_data = out_data + print_workspaces('AVAILABLE', 'us-east-1')
 
-    if len(out_data):
+    if out_data:
         post_to_teams(out_data)
 
-
-# Uncomment to debug
-#handler("", "")

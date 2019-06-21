@@ -27,6 +27,7 @@ BODY_TEMPLATE = u'{NAME:%d}{INST:%d}{IMG:%d}{LAUNCHED:%d}{TYPE:%d}\n' % \
                 (NAME_LEN, INST_LEN, IMG_LEN, LAUNCHED_LEN, TYPE_LEN)
 HEADER_TEMPLATE = u'Name: {0}  Region: {1}  VPC: {2}\n'
 
+
 @xray_recorder.capture('get_name_tag')
 def get_name_tag(tags):
     name = 'none'
@@ -156,3 +157,31 @@ def print_workspaces(status, region):
     ws_out = fp.getvalue()
     fp.close()
     return ws_out
+
+
+@xray_recorder.capture('print_unattached_volumes')
+def print_unattached_volumes(region):
+    ec2 = boto3.resource('ec2', region_name=region)
+    volumes = ec2.volumes.filter(
+        Filters=[
+            {
+                'Name': 'status',
+                'Values': ['available']
+            }
+        ]
+    )
+    found = 0
+    fp = StringIO()
+    fp.write(u'\n')
+    fp.write(u'UN-Attached Volumes in %s\n' % region)
+    fp.write(u'--------------------------------\n')
+    for volume in volumes:
+        fp.write(unicode(volume.id,'utf-8'))
+        fp.write(u'\n')
+        found += 1
+    vol_out = fp.getvalue()
+    fp.close()
+    if not found:
+        return ""
+    return vol_out
+
