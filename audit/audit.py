@@ -79,8 +79,8 @@ def post_to_teams(msg):
     # We keep the webhook for our Teams URL in a Systems Manager parameter.
     # This allows us to make the repo public without compromising security
     #
-    # hook_url = get_systems_manager_parameter("rtt-audit-output-teams-channel")
-    hook_url = get_systems_manager_parameter("rtt-audit-output-test-channel")
+    hook_url = get_systems_manager_parameter("rtt-audit-output-teams-channel")
+    # hook_url = get_systems_manager_parameter("rtt-audit-output-test-channel")
     xray_recorder.current_subsegment().put_annotation('hook_url', hook_url)
 
     req = Request(hook_url, json.dumps(teams_message))
