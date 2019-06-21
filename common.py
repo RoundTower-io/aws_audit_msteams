@@ -185,3 +185,24 @@ def print_unattached_volumes(region):
         return ""
     return vol_out
 
+@xray_recorder.capture('print_snapshots')
+def print_snapshots(ec2, region):
+    snapshots = ec2.describe_snapshots(OwnerIds=['self'])
+    snapshot_list = snapshots['Snapshots']
+
+    found = 0
+    fp = StringIO()
+    fp.write(u'\n')
+    fp.write(u'Snapshots in %s\n' % region)
+    fp.write(u'----------------------\n')
+    for snapshot in snapshot_list:
+        snapshot_id = snapshot['SnapshotId']
+        fp.write(unicode(snapshot_id, 'utf-8'))
+        fp.write(u'\n')
+        found += 1
+    sn_out = fp.getvalue()
+    fp.close()
+    if not found:
+        return ""
+    return sn_out
+
