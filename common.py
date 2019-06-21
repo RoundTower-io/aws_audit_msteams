@@ -8,7 +8,6 @@ Description:
 """
 from __future__ import print_function
 from io import StringIO
-import datetime
 import boto3
 
 # X-ray instrumentation
@@ -30,16 +29,28 @@ HEADER_TEMPLATE = u'Name: {0}  Region: {1}  VPC: {2}\n'
 
 @xray_recorder.capture('get_name_tag')
 def get_name_tag(tags):
+    """
+    Search through a collection of tags and return the value of a particular one
+
+    :param tags:  The tags to search
+    :return:  The value for that particular tag
+    """
     name = 'none'
     if tags:
         for t in tags:
-            if type(t) is dict and t['Key'] == 'Name':
+            if isinstance(t, dict) and t['Key'] == 'Name':
                 name = t['Value']
     return name
 
 
 @xray_recorder.capture('get_sorted_vpc_list')
 def get_sorted_vpc_list(vpcs):
+    """
+    Take a list of VPCs and sort them.
+
+    :param vpcs: The unsorted list of VPCs
+    :return: A sorted list of VPCs
+    """
     vpc_list = []
     for v in vpcs['Vpcs']:
         if v[u'IsDefault']:
@@ -47,7 +58,7 @@ def get_sorted_vpc_list(vpcs):
         elif 'Tags' in v:
             vtags = v['Tags']
             for vt in vtags:
-                if type(vt) is dict and vt['Key'] == 'Name':
+                if isinstance(vt, dict) and vt['Key'] == 'Name':
                     vname = vt['Value']
         else:
             vname = 'UNKNOWN'
@@ -62,6 +73,12 @@ def get_sorted_vpc_list(vpcs):
 
 @xray_recorder.capture('get_sorted_vpc_entries_list')
 def get_sorted_vpc_entries_list(entries):
+    """
+    Take a list of VPC entries and sort them
+
+    :param entries:  The VPC entries
+    :return:  The sorted version
+    """
     entry_list = []
     for reservation in entries:
         for each in reservation["Instances"]:
@@ -69,16 +86,25 @@ def get_sorted_vpc_entries_list(entries):
                 name = get_name_tag(each["Tags"])
             else:
                 name = "None"
-            instid = each[u'InstanceId']
-            imgid = each[u'ImageId']
-            dtg = each[u'LaunchTime'].strftime("%Y-%m-%d")
-            type = each[u'InstanceType']
-            entry_list.append([name, instid, imgid, dtg, type])
+            entry_list.append(
+                [name,
+                 each[u'InstanceId'],
+                 each[u'ImageId'],
+                 each[u'LaunchTime'].strftime("%Y-%m-%d"),
+                 each[u'InstanceType']]
+            )
     return sorted(entry_list)
 
 
 @xray_recorder.capture('get_box_status')
 def get_box_status(boxes, status="running"):
+    """
+    Take a list of instances and return those that match the 'status' value
+
+    :param boxes: The list of boxes (instances) to search through
+    :param status: The status you are searching for
+    :return: A list of instances that match the status value passed
+    """
     box_list = []
     for box in boxes:
         if box["Instances"][0]["State"]["Name"] == status:
@@ -88,6 +114,12 @@ def get_box_status(boxes, status="running"):
 
 @xray_recorder.capture('post_by_vpc')
 def post_by_vpc(ec2):
+    """
+    Print out VPC information in a pretty format
+
+    :param ec2: The boto3 ec2 client
+    :return: The nicely formatted list of VPCs
+    """
     vpcs = ec2.describe_vpcs()
     fp = StringIO()
 
@@ -101,7 +133,7 @@ def post_by_vpc(ec2):
             }
         ]
         res = get_box_status(ec2.describe_instances(Filters=vpc_filter)["Reservations"], "running")
-        if not len(res):
+        if not res:
             continue
 
         region = ec2.meta.region_name
@@ -133,6 +165,12 @@ def post_by_vpc(ec2):
 
 @xray_recorder.capture('print_workspaces')
 def print_workspaces(status, region):
+    """
+    Print workspace instances in a pretty format
+    :param status: The instance status value we are searching for
+    :param region: The region in which we are looking for workspaces
+    :return: The nicely formatted list of workspaces
+    """
     fp = StringIO()
     found = 0
 
@@ -161,6 +199,12 @@ def print_workspaces(status, region):
 
 @xray_recorder.capture('print_unattached_volumes')
 def print_unattached_volumes(region):
+    """
+    Print a list of un-attached volumes
+
+    :param region: The region we look in
+    :return: A nicely formatted list list of volumes to print
+    """
     ec2 = boto3.resource('ec2', region_name=region)
     volumes = ec2.volumes.filter(
         Filters=[
@@ -176,7 +220,7 @@ def print_unattached_volumes(region):
     fp.write(u'UN-Attached Volumes in %s\n' % region)
     fp.write(u'--------------------------------\n')
     for volume in volumes:
-        fp.write(unicode(volume.id,'utf-8'))
+        fp.write(unicode(volume.id, 'utf-8'))
         fp.write(u'\n')
         found += 1
     vol_out = fp.getvalue()
@@ -187,6 +231,12 @@ def print_unattached_volumes(region):
 
 @xray_recorder.capture('print_snapshots')
 def print_snapshots(ec2, region):
+    """
+    Print a list of snapshots
+    :param ec2: The boto3 ec2 client
+    :param region: The region to search in
+    :return: The nicely formatted list of snapshots to print
+    """
     snapshots = ec2.describe_snapshots(OwnerIds=['self'])
     snapshot_list = snapshots['Snapshots']
 
@@ -205,4 +255,3 @@ def print_snapshots(ec2, region):
     if not found:
         return ""
     return sn_out
-

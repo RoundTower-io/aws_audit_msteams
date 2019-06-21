@@ -6,15 +6,14 @@ Description:
 
 """
 from __future__ import print_function
+import json
+import logging
+from urllib2 import Request, urlopen, URLError, HTTPError
+import boto3
 from common import post_by_vpc
 from common import print_workspaces
 from common import print_unattached_volumes
 from common import print_snapshots
-import boto3
-import json
-import logging
-from urllib2 import Request, urlopen, URLError, HTTPError
-
 # X-ray instrumentation
 from aws_xray_sdk.core import xray_recorder
 from aws_xray_sdk.core import patch
@@ -24,15 +23,21 @@ patch(['boto3'])
 
 AWS_REGIONS = ['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2']
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+LOGGER = logging.getLogger()
+LOGGER.setLevel(logging.INFO)
 
 
 @xray_recorder.capture('get_systems_manager_parameter')
 def get_systems_manager_parameter(param_name):
+    """
+    Retrieve the given parameter from the AWS Systems Manager
+
+    :param param_name: The parm to get from Systems Manager
+    :return: The output from Systems Manager
+    """
 
     # Create the SSM Client
-    ssm = boto3.client('ssm', region_name='us-east-2' )
+    ssm = boto3.client('ssm', region_name='us-east-2')
 
     # Get the requested parameter
     response = ssm.get_parameters(
@@ -52,6 +57,12 @@ def get_systems_manager_parameter(param_name):
 
 @xray_recorder.capture('post_to_teams')
 def post_to_teams(msg):
+    """
+    Post the given message to a pre-defined MS Teams channel
+
+    :param msg: The message to be posted
+    :return: Nothing
+    """
 
     # prints to cloudwatch
     print(msg)
@@ -68,8 +79,8 @@ def post_to_teams(msg):
     # We keep the webhook for our Teams URL in a Systems Manager parameter.
     # This allows us to make the repo public without compromising security
     #
-    hook_url = get_systems_manager_parameter("rtt-audit-output-teams-channel")
-    # hook_url = get_systems_manager_parameter("rtt-audit-output-test-channel")
+    # hook_url = get_systems_manager_parameter("rtt-audit-output-teams-channel")
+    hook_url = get_systems_manager_parameter("rtt-audit-output-test-channel")
     xray_recorder.current_subsegment().put_annotation('hook_url', hook_url)
 
     req = Request(hook_url, json.dumps(teams_message))
@@ -77,17 +88,24 @@ def post_to_teams(msg):
     try:
         response = urlopen(req)
         response.read()
-        logger.info("Message posted")
+        LOGGER.info("Message posted")
     except HTTPError as e:
-        logger.error("Request failed: %d %s", e.code, e.reason)
+        LOGGER.error("Request failed: %d %s", e.code, e.reason)
         xray_recorder.current_subsegment().put_annotation('http_error', e.code)
     except URLError as e:
-        logger.error("Server connection failed: %s", e.reason)
+        LOGGER.error("Server connection failed: %s", e.reason)
         xray_recorder.current_subsegment().put_annotation('url_error', e.reason)
 
 
 # noinspection PyUnusedLocal
 def handler(event, context):
+    """
+    The main lambda function handler
+
+    :param event:  The event which drives the function (unused)
+    :param context: The context in which the function is called (unused)
+    :return: Nothing.
+    """
     out_data = ""
     for region in AWS_REGIONS:
         client = boto3.client('ec2', region_name=region)
@@ -99,4 +117,3 @@ def handler(event, context):
 
     if out_data:
         post_to_teams(out_data)
-
