@@ -218,9 +218,12 @@ def print_unattached_volumes(region):
     fp = StringIO()
     fp.write(u'\n')
     fp.write(u'UN-Attached Volumes in %s\n' % region)
-    fp.write(u'--------------------------------\n')
+    fp.write(u'---------------------------------\n')
     for volume in volumes:
+        volume_data = ec2.Volume(volume.id)
         fp.write(unicode(volume.id, 'utf-8'))
+        fp.write(u'  ')
+        fp.write(unicode(volume_data.create_time.strftime("%Y-%m-%d"), 'utf-8'))
         fp.write(u'\n')
         found += 1
     vol_out = fp.getvalue()
@@ -244,10 +247,13 @@ def print_snapshots(ec2, region):
     fp = StringIO()
     fp.write(u'\n')
     fp.write(u'Snapshots in %s\n' % region)
-    fp.write(u'----------------------\n')
+    fp.write(u'----------------------------------\n')
     for snapshot in snapshot_list:
         snapshot_id = snapshot['SnapshotId']
+        snapshot_start_time = snapshot['StartTime'].strftime("%Y-%m-%d")
         fp.write(unicode(snapshot_id, 'utf-8'))
+        fp.write(u'  ')
+        fp.write(unicode(snapshot_start_time, 'utf-8'))
         fp.write(u'\n')
         found += 1
     sn_out = fp.getvalue()
