@@ -193,13 +193,10 @@ def print_workspaces(status, region):
             fp.write(unicode(username, "utf-8"))
             fp.write(u'\n')
             found += 1
-
-    if not found:
-        fp.close()
-        return ""
-
     ws_out = fp.getvalue()
     fp.close()
+    if not found:
+        return ""
     return ws_out
 
 
