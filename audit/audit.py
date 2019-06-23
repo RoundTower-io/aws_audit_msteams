@@ -81,8 +81,9 @@ def post_to_teams(msg):
     #
     # Comment out line below for debug
     hook_url = get_systems_manager_parameter("rtt-audit-output-teams-channel")
-    # Uncomment below for debug
+    # UN-comment line below for debug
     # hook_url = get_systems_manager_parameter("rtt-audit-output-test-channel")
+
     xray_recorder.current_subsegment().put_annotation('hook_url', hook_url)
 
     req = Request(hook_url, json.dumps(teams_message))
@@ -111,10 +112,10 @@ def handler(event, context):
     out_data = ""
     for region in AWS_REGIONS:
         client = boto3.client('ec2', region_name=region)
-        out_data = out_data + post_by_vpc(ec2=client)
-        out_data = out_data + print_unattached_volumes(region)
-        out_data = out_data + print_snapshots(client, region)
-        out_data = out_data + print_workspaces('AVAILABLE', region)
+        out_data += post_by_vpc(ec2=client)
+        out_data += print_unattached_volumes(region)
+        out_data += print_snapshots(client, region)
+        out_data += print_workspaces('AVAILABLE', region)
 
     if out_data:
         post_to_teams(out_data)
