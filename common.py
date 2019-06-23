@@ -9,6 +9,7 @@ Description:
 from __future__ import print_function
 from io import StringIO
 import boto3
+from botocore.exceptions import EndpointConnectionError
 
 # X-ray instrumentation
 from aws_xray_sdk.core import xray_recorder
@@ -171,14 +172,19 @@ def print_workspaces(status, region):
     :param region: The region in which we are looking for workspaces
     :return: The nicely formatted list of workspaces
     """
+
+    ws = boto3.client("workspaces", region_name=region)
+    try:
+        response = ws.describe_workspaces()
+    except EndpointConnectionError:
+        print("Region does not appear to support workspaces yet: ", region)
+        return ""
+
     fp = StringIO()
     found = 0
-
     fp.write(u'\n')
     fp.write(u'Active Workspaces in %s\n' % region)
     fp.write(u'------------------------------\n')
-    ws = boto3.client("workspaces", region_name=region)
-    response = ws.describe_workspaces()
     for workspace in response["Workspaces"]:
         # Some temporary variables for each workspace
         state = str(workspace["State"])
@@ -188,7 +194,7 @@ def print_workspaces(status, region):
             fp.write(u'\n')
             found += 1
 
-    if found == 0:
+    if not found:
         fp.close()
         return ""
 
