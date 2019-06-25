@@ -1,27 +1,28 @@
 # aws_audit_msteams
+
+# What is it?
 An AWS Lambda function that posts information about running resources to MS Teams channels
+
+# Why is it needed? 
+It is needed to keep track of resources running on AWS.  This is meant for use in lab environments or on AWS accounts with multiple users.  
+Frequently, resources like ec2 instances are started and promptly forgotten about.  Sometimes weeks will pass before someone notices 
+the active resource and stops it.  This tool is meant to keep that from happening.  It will post to MS Teams a list of active resources and serve 
+as a reminder to stop anything unnecessary.
 
 # Why use an AWS Lambda function?
 To borrow from the AWS documentation, lambdas are an excellent way to "run your code in response to events and automatically manages the underlying compute resources for you".  There are no servers to set up.  It "just works" without having to worry about configuring any complex infrastructure.  
 
 In our case the lambda runs in response to a timer trigger.  The lambda is driven (generally daily) to detect, document, and report running assets on our AWS environment. The report output is sent to an MS Teams channel.   
 
+# What are the pre-reqs?
 
-# What Are The Pre-Reqs?
-[lambda-uploader][1] - A utility that helps package and upload Python lambda functions to AWS
+You need to install the ["AWS Serverless Application Model(SAM)"][3]
 
-```
-pip install lambda-uploader
-```
-
-# Setup
-
-## AWS Systems Manager & Microsoft Teams 
-1. Create an "Incomming Webhook" connector in the MS Teams channel of your choice.  [Here](https://docs.microsoft.com/en-us/outlook/actionable-messages/send-via-connectors#sending-actionable-messages-via-office-365-connectors) is a writeup describing how to do that.
-2. Go to the parameter store in [AWS Systems Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html) 
-3. Create a parameter in the parameter store and save the MS Teams webhook URL there.  
+# How do you update it?
+The easiest way to update the lambda function is via an IDE.  [There are several supported by SAM][4].  
 
 
+# What other things are needed to setup the Lambda Function?
 ## AWS IAM
 There needs to be an IAM ["Execution Role"][2] defined to allow our lambda role to execute. This
 example uses lambda_s3_monitor. There are 2 sections within `lambda_s3_monitor`.  One sets s3 permissions and the other defines runtime logging.
@@ -36,11 +37,8 @@ example uses lambda_s3_monitor. There are 2 sections within `lambda_s3_monitor`.
       "role": "arn:aws:iam::123456789012:role/lambda_aws_audit_execution_role",
     ```
 
-# Upload to AWS
-In the same directory as this readme file, run command
-```
-make
-```
 
 [1]: https://github.com/rackerlabs/lambda-uploader
 [2]: https://docs.aws.amazon.com/lambda/latest/dg/intro-permission-model.html#lambda-intro-execution-role
+[3]: https://docs.aws.amazon.com/serverless-application-model/index.html
+[4]: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html

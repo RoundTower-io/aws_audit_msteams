@@ -1,0 +1,8 @@
+Resources:
+  Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: audit/audit.handler
+      CodeUri: /Users/tennis.smith/PycharmProjects/aws_audit_msteams
+      Runtime: python3.7
+      Timeout: 900

@@ -11,13 +11,14 @@ import logging
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
 import boto3
-from common import post_by_vpc
-from common import print_workspaces
-from common import print_unattached_volumes
-from common import print_snapshots
 # X-ray instrumentation
 from aws_xray_sdk.core import xray_recorder
 from aws_xray_sdk.core import patch
+# imports from common lib
+from audit.common import post_by_vpc
+from audit.common import print_workspaces
+from audit.common import print_unattached_volumes
+from audit.common import print_snapshots
 
 # patch boto for xray usage
 patch(['boto3'])
