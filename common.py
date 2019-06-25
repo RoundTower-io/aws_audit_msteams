@@ -6,7 +6,7 @@ Description:
  VPCs
 
 """
-from __future__ import print_function
+
 from io import StringIO
 import boto3
 from botocore.exceptions import EndpointConnectionError
@@ -23,9 +23,9 @@ IMG_LEN = 25
 LAUNCHED_LEN = 14
 TYPE_LEN = 12
 
-BODY_TEMPLATE = u'{NAME:%d}{INST:%d}{IMG:%d}{LAUNCHED:%d}{TYPE:%d}\n' % \
+BODY_TEMPLATE = '{NAME:%d}{INST:%d}{IMG:%d}{LAUNCHED:%d}{TYPE:%d}\n' % \
                 (NAME_LEN, INST_LEN, IMG_LEN, LAUNCHED_LEN, TYPE_LEN)
-HEADER_TEMPLATE = u'Name: {0}  Region: {1}  VPC: {2}\n'
+HEADER_TEMPLATE = 'Name: {0}  Region: {1}  VPC: {2}\n'
 
 
 @xray_recorder.capture('get_name_tag')
@@ -54,7 +54,7 @@ def get_sorted_vpc_list(vpcs):
     """
     vpc_list = []
     for v in vpcs['Vpcs']:
-        if v[u'IsDefault']:
+        if v['IsDefault']:
             vname = 'Default'
         elif 'Tags' in v:
             vtags = v['Tags']
@@ -89,10 +89,10 @@ def get_sorted_vpc_entries_list(entries):
                 name = "None"
             entry_list.append(
                 [name,
-                 each[u'InstanceId'],
-                 each[u'ImageId'],
-                 each[u'LaunchTime'].strftime("%Y-%m-%d"),
-                 each[u'InstanceType']]
+                 each['InstanceId'],
+                 each['ImageId'],
+                 each['LaunchTime'].strftime("%Y-%m-%d"),
+                 each['InstanceType']]
             )
     return sorted(entry_list)
 
@@ -138,9 +138,9 @@ def post_by_vpc(ec2):
             continue
 
         region = ec2.meta.region_name
-        fp.write(u'\n')
+        fp.write('\n')
         fp.write(HEADER_TEMPLATE.format(vpc_name, region, vpc_id.replace('vpc-', '')))
-        fp.write(u'\n')
+        fp.write('\n')
         fp.write(BODY_TEMPLATE.format(NAME='Name',
                                       INST='Instance',
                                       IMG='Image',
@@ -182,16 +182,16 @@ def print_workspaces(status, region):
 
     fp = StringIO()
     found = 0
-    fp.write(u'\n')
-    fp.write(u'Active Workspaces in %s\n' % region)
-    fp.write(u'------------------------------\n')
+    fp.write('\n')
+    fp.write('Active Workspaces in %s\n' % region)
+    fp.write('------------------------------\n')
     for workspace in response["Workspaces"]:
         # Some temporary variables for each workspace
         state = str(workspace["State"])
         username = str(workspace["UserName"])
         if state == status:
-            fp.write(unicode(username, "utf-8"))
-            fp.write(u'\n')
+            fp.write(str(username, "utf-8"))
+            fp.write('\n')
             found += 1
     ws_out = fp.getvalue()
     fp.close()
@@ -219,21 +219,22 @@ def print_unattached_volumes(region):
     )
     found = 0
     fp = StringIO()
-    fp.write(u'\n')
-    fp.write(u'UN-Attached Volumes in %s\n' % region)
-    fp.write(u'---------------------------------\n')
+    fp.write('\n')
+    fp.write('UN-Attached Volumes in %s\n' % region)
+    fp.write('---------------------------------\n')
     for volume in volumes:
         volume_data = ec2.Volume(volume.id)
-        fp.write(unicode(volume.id, 'utf-8'))
-        fp.write(u'  ')
-        fp.write(unicode(volume_data.create_time.strftime("%Y-%m-%d"), 'utf-8'))
-        fp.write(u'\n')
+        fp.write(str(volume.id, 'utf-8'))
+        fp.write('  ')
+        fp.write(str(volume_data.create_time.strftime("%Y-%m-%d"), 'utf-8'))
+        fp.write('\n')
         found += 1
     vol_out = fp.getvalue()
     fp.close()
     if not found:
         return ""
     return vol_out
+
 
 @xray_recorder.capture('print_snapshots')
 def print_snapshots(ec2, region):
@@ -248,16 +249,16 @@ def print_snapshots(ec2, region):
 
     found = 0
     fp = StringIO()
-    fp.write(u'\n')
-    fp.write(u'Snapshots in %s\n' % region)
-    fp.write(u'----------------------------------\n')
+    fp.write('\n')
+    fp.write('Snapshots in %s\n' % region)
+    fp.write('----------------------------------\n')
     for snapshot in snapshot_list:
         snapshot_id = snapshot['SnapshotId']
         snapshot_start_time = snapshot['StartTime'].strftime("%Y-%m-%d")
-        fp.write(unicode(snapshot_id, 'utf-8'))
-        fp.write(u'  ')
-        fp.write(unicode(snapshot_start_time, 'utf-8'))
-        fp.write(u'\n')
+        fp.write(str(snapshot_id, 'utf-8'))
+        fp.write('  ')
+        fp.write(str(snapshot_start_time, 'utf-8'))
+        fp.write('\n')
         found += 1
     sn_out = fp.getvalue()
     fp.close()

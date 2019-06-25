@@ -5,10 +5,11 @@ Description:
  VPCs and workspaces
 
 """
-from __future__ import print_function
+
 import json
 import logging
-from urllib2 import Request, urlopen, URLError, HTTPError
+from urllib.request import Request, urlopen
+from urllib.error import URLError, HTTPError
 import boto3
 from common import post_by_vpc
 from common import print_workspaces
