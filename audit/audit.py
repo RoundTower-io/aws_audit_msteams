@@ -101,6 +101,7 @@ def post_to_teams(msg):
 
 
 # noinspection PyUnusedLocal
+@xray_recorder.capture('handler')
 def handler(event, context):
     """
     The main lambda function handler
