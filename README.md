@@ -15,29 +15,26 @@ To borrow from the AWS documentation, lambdas are an excellent way to "run your 
 In our case the lambda runs in response to a timer trigger.  The lambda is driven (generally daily) to detect, document, and report running assets on our AWS environment. The report output is sent to an MS Teams channel.   
 
 # What are the pre-reqs?
-You need to install the ["AWS Serverless Application Model(SAM)"][3] module.
+1. [Git][11] 
+1. The [AWS Command Line Interface][6]
+1. The ["AWS Serverless Application Model(SAM)"][3] Python module.
+1. [Docker][7]. This is used for local running and debugging  
+1. An IDE. [There are several supporting SAM][4]. We used [PyCharm][5] 
 
-# How do you update it?
-The easiest way to update the lambda function is via an IDE.  [There are several supported by SAM][4].  
-
-
-# What other things are needed to setup the Lambda Function?
-## AWS IAM
-There needs to be an IAM ["Execution Role"][2] defined to allow our lambda role to execute. This
-example uses lambda_s3_monitor. There are 2 sections within `lambda_s3_monitor`.  One sets s3 permissions and the other defines runtime logging.
-
-1. Follow the steps in Creating a Role for an AWS Service (AWS Management Console) in the IAM User Guide to create an IAM role (execution role). As you follow the steps to create a role, note the following:
-2. In Role Name, use a name that is unique within your AWS account (for example, lambda_aws_audit_execution_role).
-3. In Select Role Type, choose AWS Service Roles, and then choose AWS Lambda. This grants the AWS Lambda service permissions to assume the role.
-4. In Attach Policy, choose `AWSLambdaBasicExecutionRole`, `AmazonEC2ReadOnlyAccess` and `AmazonWorkSpacesAdmin`
-5. Copy the `Role ARN` (at the top of the page) and paste it in the `Role` field of the `lambda.json` file. This will associate your role with your lambda function.
-    ```
-    Example 
-      "role": "arn:aws:iam::123456789012:role/lambda_aws_audit_execution_role",
-    ```
+# How do I use PyCharm with it?
+1. [Install PyCharm][8]
+1. Install the [AWS Toolkit Plugin for PyCharm][9]
+1. [Clone a copy of this repo][10] using PyCharm
+1. Follow [these directions][12] for using toolkit
 
 
-[1]: https://github.com/rackerlabs/lambda-uploader
-[2]: https://docs.aws.amazon.com/lambda/latest/dg/intro-permission-model.html#lambda-intro-execution-role
 [3]: https://docs.aws.amazon.com/serverless-application-model/index.html
 [4]: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html
+[5]: https://www.jetbrains.com/pycharm/
+[6]: https://aws.amazon.com/cli/
+[7]: https://www.docker.com/products/docker-desktop
+[8]: https://www.jetbrains.com/help/pycharm/installation-guide.html?section=Windows
+[9]: https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/setup-toolkit.html
+[10]: https://www.jetbrains.com/help/pycharm/manage-projects-hosted-on-github.html
+[11]: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
+[12]: https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/building-lambda.html
