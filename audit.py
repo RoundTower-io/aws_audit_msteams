@@ -14,11 +14,9 @@ import boto3
 # X-ray instrumentation
 from aws_xray_sdk.core import xray_recorder
 from aws_xray_sdk.core import patch
+
 # imports from common lib
-from audit.common import post_by_vpc
-from audit.common import print_workspaces
-from audit.common import print_unattached_volumes
-from audit.common import print_snapshots
+import common
 
 # patch boto for xray usage
 patch(['boto3'])
@@ -83,12 +81,15 @@ def post_to_teams(msg):
     #
     # Comment out line below for debug
     hook_url = get_systems_manager_parameter("rtt-audit-output-teams-channel")
+
     # UN-comment line below for debug
     # hook_url = get_systems_manager_parameter("rtt-audit-output-test-channel")
 
     xray_recorder.current_subsegment().put_annotation('hook_url', hook_url)
 
-    req = Request(hook_url, json.dumps(teams_message))
+    data = json.dumps(teams_message)
+
+    req = Request(hook_url, data.encode('utf-8'))
 
     try:
         response = urlopen(req)
@@ -115,10 +116,10 @@ def handler(event, context):
     out_data = ""
     for region in AWS_REGIONS:
         client = boto3.client('ec2', region_name=region)
-        out_data += post_by_vpc(ec2=client)
-        out_data += print_unattached_volumes(region)
-        out_data += print_snapshots(client, region)
-        out_data += print_workspaces('AVAILABLE', region)
+        out_data += common.post_by_vpc(ec2=client)
+        out_data += common.print_unattached_volumes(region)
+        out_data += common.print_snapshots(client, region)
+        out_data += common.print_workspaces('AVAILABLE', region)
 
     if out_data:
         post_to_teams(out_data)

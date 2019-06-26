@@ -15,8 +15,7 @@ To borrow from the AWS documentation, lambdas are an excellent way to "run your 
 In our case the lambda runs in response to a timer trigger.  The lambda is driven (generally daily) to detect, document, and report running assets on our AWS environment. The report output is sent to an MS Teams channel.   
 
 # What are the pre-reqs?
-
-You need to install the ["AWS Serverless Application Model(SAM)"][3]
+You need to install the ["AWS Serverless Application Model(SAM)"][3] module.
 
 # How do you update it?
 The easiest way to update the lambda function is via an IDE.  [There are several supported by SAM][4].  
