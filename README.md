@@ -5,7 +5,8 @@ An AWS Lambda function that posts information about running resources to MS Team
 
 # Why is it needed? 
 It is needed to keep track of resources running on AWS.  This is meant for use in lab environments or on AWS accounts with multiple users.  
-Frequently, resources like ec2 instances are started and promptly forgotten about.  Sometimes weeks will pass before someone notices 
+
+Frequently, resources like ec2 instances are started - and promptly forgotten about.  Sometimes weeks will pass before someone notices 
 the active resource and stops it.  This tool is meant to keep that from happening.  It will post to MS Teams a list of active resources and serve 
 as a reminder to stop anything unnecessary.
 
@@ -28,7 +29,7 @@ In our case the lambda runs in response to a timer trigger.  The lambda is drive
 1. Follow [these directions][12] for using toolkit
 
 # What else is needed on AWS to support it?
-1. An AWS [Cloudwatch Event][13] to "drive" the lambda function
+1. An AWS [Cloudwatch Event][13] to "drive" the lambda function. The idea is to have a cron-like event kick off the report. 
 1. An AWS [IAM role][14] that defines the permissions your function has 
 1. An AWS [Systems Manager Parameter Store][15]. This will be where you keep the MS Teams webhook URL
 
