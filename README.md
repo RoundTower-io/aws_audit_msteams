@@ -27,6 +27,15 @@ In our case the lambda runs in response to a timer trigger.  The lambda is drive
 1. [Clone a copy of this repo][10] using PyCharm
 1. Follow [these directions][12] for using toolkit
 
+# What else is needed on AWS to support it?
+1. An AWS [Cloudwatch Event][13] to "drive" the lambda function
+1. An AWS [IAM role][14] that defines the permissions your function has 
+1. An AWS [Systems Manager Parameter Store][15]. This will be where you keep the MS Teams webhook URL
+
+# What needs to be done on Microsoft Teams?
+1. Create a [webhook][16] for the channel you want output to go to. 
+1. Store the webhook URL in the Systems Manager Parameter Store (above).
+
 
 [3]: https://docs.aws.amazon.com/serverless-application-model/index.html
 [4]: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html
@@ -38,3 +47,7 @@ In our case the lambda runs in response to a timer trigger.  The lambda is drive
 [10]: https://www.jetbrains.com/help/pycharm/manage-projects-hosted-on-github.html
 [11]: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 [12]: https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/building-lambda.html
+[13]: https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/RunLambdaSchedule.html
+[14]: https://docs.aws.amazon.com/lambda/latest/dg/access-control-identity-based.html
+[15]: https://aws.amazon.com/blogs/compute/sharing-secrets-with-aws-lambda-using-aws-systems-manager-parameter-store/
+[16]: https://docs.microsoft.com/en-us/outlook/actionable-messages/send-via-connectors
