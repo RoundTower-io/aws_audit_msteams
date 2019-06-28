@@ -1,5 +1,3 @@
-# aws_audit_msteams
-
 # What is it?
 An AWS Lambda function that posts information about running resources to MS Teams channels
 
