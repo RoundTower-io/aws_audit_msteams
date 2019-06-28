@@ -24,7 +24,7 @@ In our case the lambda runs in response to a timer trigger.  The lambda is drive
 1. [Install PyCharm][8]
 1. Install the [AWS Toolkit Plugin for PyCharm][9]
 1. [Clone a copy of this repo][10] using PyCharm
-1. Follow [these directions][12] for using toolkit
+1. Follow [these directions][12] for using the toolkit
 
 # What else is needed on AWS to support it?
 1. An AWS [Cloudwatch Event][13] to "drive" the lambda function. The idea is to have a cron-like event kick off the report. 
