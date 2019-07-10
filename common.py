@@ -190,7 +190,7 @@ def print_workspaces(status, region):
         state = str(workspace["State"])
         username = str(workspace["UserName"])
         if state == status:
-            fp.write(str(username, "utf-8"))
+            fp.write(username)
             fp.write('\n')
             found += 1
     ws_out = fp.getvalue()
