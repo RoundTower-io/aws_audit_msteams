@@ -16,5 +16,5 @@ phases:
 artifacts:
   files:
     - '*.py'
-    - '*.yaml'
+    - '*.yml'
 
