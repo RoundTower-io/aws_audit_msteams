@@ -15,4 +15,4 @@ phases:
       - ls -al
 artifacts:
   files:
-    - '**/*'
+    - '*.py'
