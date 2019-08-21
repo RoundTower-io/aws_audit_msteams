@@ -15,6 +15,7 @@ phases:
       - ls -al
 artifacts:
   files:
-    - '*.py'
-    - '*.yaml'
+    - 'audit.py'
+    - 'common.py'
+    - 'appspec.yml'
 
