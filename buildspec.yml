@@ -8,6 +8,7 @@ phases:
       - echo Build started on `date`
       - echo Compiling the Python code...
       - pip install requests -t .
+      - pip install aws_xray_sdk -t .
       - pwd
       - ls -la
       - export BUCKET=rtt-audit-lambda-function
