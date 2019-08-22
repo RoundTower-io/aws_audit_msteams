@@ -5,6 +5,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: audit.handler
-      CodeUri: 's3://rtt-audit-lambda-function'
+      CodeUri: ./src
       Runtime: python3.7
       Timeout: 900
