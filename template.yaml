@@ -3,5 +3,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: audit.handler
+      CodeUri: /.
       Runtime: python3.7
       Timeout: 900

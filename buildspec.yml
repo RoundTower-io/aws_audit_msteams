@@ -8,14 +8,18 @@ phases:
       - echo Build started on `date`
       - echo Compiling the Python code...
       - pip install requests -t .
+      - export BUCKET=rtt-audit-lambda-function
+      - aws cloudformation package --template-file template.yaml --s3-bucket $BUCKET --output-template-file outputtemplate.yaml
   post_build:
     commands:
       - echo Build completed on `date`
       - pwd
       - ls -al
 artifacts:
+  type: zip
   files:
     - 'audit.py'
     - 'common.py'
-    - 'appspec.yml'
+    - 'template.yaml'
+    - 'outtemplate.yaml'
 
