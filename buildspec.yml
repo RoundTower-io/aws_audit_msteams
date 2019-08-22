@@ -11,7 +11,7 @@ phases:
       - pwd
       - ls -la
       - export BUCKET=rtt-audit-lambda-function
-      - aws cloudformation package --template-file template.yaml --s3-bucket $BUCKET --output-template-file outputtemplate.yaml
+      - aws cloudformation package --template-file template.yaml --s3-bucket $BUCKET --output-template-file outputtemplate.yaml --debug
   post_build:
     commands:
       - echo Build completed on `date`
