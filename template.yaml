@@ -4,12 +4,13 @@ Resources:
   Function:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: audit
+#      FunctionName: audit
       Handler: audit.handler
       CodeUri: ./src
       Runtime: python3.7
       Timeout: 900
       Events:
-        Type: Schedule
-        Properties:
-          Schedule: cron(0 21 ? * * *)
+        SetAuditTrigger:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 21 ? * * *)
