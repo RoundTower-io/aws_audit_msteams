@@ -9,3 +9,7 @@ Resources:
       CodeUri: ./src
       Runtime: python3.7
       Timeout: 900
+      Events:
+        Type: Schedule
+        Properties:
+          Schedule: cron(0 21 ? * * *)
