@@ -16,7 +16,7 @@ from aws_xray_sdk.core import xray_recorder
 from aws_xray_sdk.core import patch
 
 # imports from common lib
-import common
+from src import common
 
 # patch boto for xray usage
 patch(['boto3'])
