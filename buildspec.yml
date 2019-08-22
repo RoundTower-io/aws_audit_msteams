@@ -21,8 +21,8 @@ phases:
 artifacts:
   type: zip
   files:
-    - 'src/audit.py'
-    - 'src/common.py'
+    - 'audit.py'
+    - 'common.py'
     - 'template.yaml'
     - 'outputtemplate.yaml'
 
