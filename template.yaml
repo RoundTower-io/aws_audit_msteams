@@ -6,7 +6,7 @@ Resources:
     Properties:
 #      FunctionName: audit
       Handler: audit.handler
-      CodeUri: ./src
+      CodeUri: ./
       Runtime: python3.7
       Timeout: 900
       Events:
