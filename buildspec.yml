@@ -23,5 +23,5 @@ artifacts:
     - 'src/audit.py'
     - 'src/common.py'
     - 'template.yaml'
-    - 'outtemplate.yaml'
+    - 'outputtemplate.yaml'
 
