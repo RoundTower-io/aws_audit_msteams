@@ -9,6 +9,7 @@ Resources:
       CodeUri: ./
       Runtime: python3.7
       Timeout: 900
+      Role: 'arn:aws:iam::375301133253:role/lambda_aws_audit_execution_role'
       Events:
         SetAuditTrigger:
           Type: Schedule
