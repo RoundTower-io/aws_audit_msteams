@@ -13,11 +13,11 @@ To borrow from the AWS documentation, lambdas are an excellent way to "run your 
 
 In our case the lambda runs in response to a timer trigger.  The lambda is driven (generally daily) to detect, document, and report running assets on our AWS environment. The report output is sent to an MS Teams channel.   
 
-# What are the pre-reqs?
-1. [Git][11].  Whenever a you commit to this repo, you will drive the pipeline (below) and update the lambda function.
-1. An [AWS build pipeline][12] called "aws-audit-lambda-pipeline" creates and updates  the lambda function. 
-1. An AWS [IAM role][14] that defines the permissions your function has 
-1. An AWS [Systems Manager Parameter Store][15]. This will be where you keep the MS Teams webhook URL
+# How does this work on AWS?
+1. Whenever a you commit to this repo (using [Git][11]), you will drive the pipeline (below) and update the lambda function.
+1. An [AWS build pipeline][12] called "aws-audit-lambda-pipeline" creates and updates the lambda function. 
+1. An AWS [IAM role][14] defines the permissions your function has 
+1. The AWS [Systems Manager Parameter Store][15] is where we keep the MS Teams webhook URL. This is sensitive info, so we keep it in the secrets repository.
 
 # What needs to be done on Microsoft Teams?
 1. Create a [webhook][16] for the channel you want output to go to. 
