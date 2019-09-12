@@ -25,8 +25,8 @@ Resources:
       Namespace: "AWS/Lambda"
       MetricName: "Errors"
       Dimensions:
-        - Name: "audit"
-          Value: "NameOfYourLambdaFunction"
+        - Name: "FunctionName"
+          Value: "audit"
       Statistic: "Sum"
       ComparisonOperator: "GreaterThanThreshold"
       Threshold: 0
