@@ -2,6 +2,14 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
 Resources:
 
+  SnsTopic:
+    Type: 'AWS::SNS::Topic'
+    Properties:
+      Subscription:
+        - Endpoint: tennis.smith@roundtower.com
+          Protocol: email
+      TopicName: alarm-action
+
   ServerlessFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -33,3 +41,5 @@ Resources:
       EvaluationPeriods: 5
       Period: 60
       TreatMissingData: "breaching"
+      AlarmActions:
+        - Ref: SnsTopic
