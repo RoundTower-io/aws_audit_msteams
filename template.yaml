@@ -1,7 +1,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
 Resources:
-  Function:
+
+  ServerlessFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: audit
@@ -15,3 +16,20 @@ Resources:
           Type: Schedule
           Properties:
             Schedule: cron(0 21 ? * * *)
+
+  CloudWatchFunction:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: "AuditFunctionErrors"
+      AlarmDescription: "Alarm if lambda errors out too many times"
+      Namespace: "AWS/Lambda"
+      MetricName: "Errors"
+      Dimensions:
+        - Name: "audit"
+          Value: "NameOfYourLambdaFunction"
+      Statistic: "Sum"
+      ComparisonOperator: "GreaterThanThreshold"
+      Threshold: 0
+      EvaluationPeriods: 5
+      Period: 60
+      TreatMissingData: "breaching"
