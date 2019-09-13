@@ -40,6 +40,6 @@ Resources:
       Threshold: 0
       EvaluationPeriods: 5
       Period: 60
-      TreatMissingData: "breaching"
+      TreatMissingData: "good"
       AlarmActions:
         - Ref: SnsTopic
