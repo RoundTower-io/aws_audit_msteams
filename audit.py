@@ -114,6 +114,11 @@ def handler(event, context):
     :param context: The context in which the function is called (unused)
     :return: Nothing.
     """
+
+    xray_recorder.current_subsegment().put_annotation('event', event)
+
+    xray_recorder.current_subsegment().put_annotation('context', context)
+
     out_data = ""
     for region in AWS_MONITOR_REGIONS:
         client = boto3.client('ec2', region_name=region)
