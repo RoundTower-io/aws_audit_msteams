@@ -23,7 +23,6 @@ import common
 patch(['boto3'])
 
 AWS_HOME_REGION = 'us-east-2'
-AWS_MONITOR_REGIONS = ['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2']
 AWS_SYSTEMS_MANAGER_PARM = "rtt-audit-output-teams-channel"
 # UN-comment line below for debug
 #AWS_SYSTEMS_MANAGER_PARM = "rtt-audit-output-test-channel"
@@ -104,6 +103,24 @@ def post_to_teams(msg):
         xray_recorder.current_subsegment().put_annotation('url_error', e.reason)
 
 
+@xray_recorder.capture('get_regions')
+def get_regions():
+    """
+    A simple routine to retrieve all the AWS region names
+    :return: A list of region names
+    """
+    region_list = []
+    ec2 = boto3.client('ec2')
+
+    # Retrieves all regions/endpoints that work with EC2
+    response = ec2.describe_regions()
+
+    for region in response["Regions"]:
+        region_list.append(region["RegionName"])
+
+    return region_list
+
+
 # noinspection PyUnusedLocal
 @xray_recorder.capture('handler')
 def handler(event, context):
@@ -120,7 +137,7 @@ def handler(event, context):
     xray_recorder.current_subsegment().put_annotation('context', context)
 
     out_data = ""
-    for region in AWS_MONITOR_REGIONS:
+    for region in get_regions():
         client = boto3.client('ec2', region_name=region)
         out_data += common.post_by_vpc(ec2=client)
         out_data += common.print_unattached_volumes(region)
@@ -129,3 +146,5 @@ def handler(event, context):
 
     if out_data:
         post_to_teams(out_data)
+    else:
+        print("Nothing to report")
