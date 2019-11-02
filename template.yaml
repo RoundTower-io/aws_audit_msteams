@@ -27,8 +27,10 @@ Resources:
         HttpPost:
           Type: Api
           Properties:
-            Path: 'audit/status'
+            Path: '/status'
             Method: post
+            Auth:
+              Authorizer: NONE
 
   CloudWatchFunction:
     Type: AWS::CloudWatch::Alarm
