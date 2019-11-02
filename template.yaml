@@ -29,8 +29,7 @@ Resources:
           Properties:
             Path: '/status'
             Method: post
-            Auth:
-              Authorizer: none
+
 
   CloudWatchFunction:
     Type: AWS::CloudWatch::Alarm
