@@ -30,6 +30,7 @@ AWS_SYSTEMS_MANAGER_PARM = "rtt-audit-output-teams-channel"
 LOGGER = logging.getLogger()
 LOGGER.setLevel(logging.INFO)
 
+
 @xray_recorder.capture('get_systems_manager_parameter')
 def get_systems_manager_parameter(param_name):
     """
