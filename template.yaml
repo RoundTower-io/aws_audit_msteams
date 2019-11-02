@@ -27,8 +27,7 @@ Resources:
         HttpPost:
           Type: Api
           Properties:
-            Path: '/status'
-            Method: post
+            Method: any
 
 
   CloudWatchFunction:
