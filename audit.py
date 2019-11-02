@@ -133,6 +133,8 @@ def handler(event, context):
     :return: Nothing.
     """
 
+    print("Event:\n"+str(event))
+
     xray_recorder.current_subsegment().put_annotation('event', event)
 
     xray_recorder.current_subsegment().put_annotation('context', context)
