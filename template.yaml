@@ -24,6 +24,11 @@ Resources:
           Type: Schedule
           Properties:
             Schedule: cron(0 21 ? * * *)
+        HttpPost:
+          Type: Api
+          Properties:
+            Path: 'audit/status'
+            Method: post
 
   CloudWatchFunction:
     Type: AWS::CloudWatch::Alarm
