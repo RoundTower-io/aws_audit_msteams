@@ -27,6 +27,7 @@ Resources:
         HttpPost:
           Type: Api
           Properties:
+            Path: '/status'
             Method: any
 
 
