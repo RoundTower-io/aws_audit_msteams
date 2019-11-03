@@ -18,8 +18,8 @@ from aws_xray_sdk.core import patch
 patch(['boto3'])
 
 NAME_LEN = 20
-INST_LEN = 23
-IMG_LEN = 25
+INST_LEN = 14
+IMG_LEN = 16
 LAUNCHED_LEN = 14
 TYPE_LEN = 12
 
@@ -113,6 +113,18 @@ def get_box_status(boxes, status="running"):
     return box_list
 
 
+@xray_recorder.capture('abbreviate')
+def abbreviate(a_string):
+    """
+    1. Hack off the first 6 and the last 4 characters.
+    2. Then join them with an ellipsis.
+
+    :param a_string:
+    :return: An abbreviated string
+    """
+    return str(a_string[0:6]+'...'+a_string[-4::])
+
+
 @xray_recorder.capture('print_instances')
 def print_instances(ec2):
     """
@@ -155,8 +167,8 @@ def print_instances(ec2):
 
         for instance in get_sorted_vpc_entries_list(res):
             fp.write(BODY_TEMPLATE.format(NAME=instance[0],
-                                          INST=instance[1],
-                                          IMG=instance[2],
+                                          INST=abbreviate(instance[1]),
+                                          IMG=abbreviate(instance[2]),
                                           LAUNCHED=instance[3],
                                           TYPE=instance[4]))
     vpc_out = fp.getvalue()
