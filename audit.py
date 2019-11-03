@@ -173,6 +173,7 @@ def handle_msteams_command(event):
     else:
         out_data = "Invocation did not originate from MSTeams"
 
+    print("returning out_data:\n" + out_data)
     return out_data
 
 
@@ -187,7 +188,7 @@ def handler(event, context):
     :return: Nothing.
     """
 
-    print("Event:\n"+str(event))
+    #print("Event:\n"+str(event))
 
     xray_recorder.current_subsegment().put_annotation('event', event)
     xray_recorder.current_subsegment().put_annotation('context', context)
