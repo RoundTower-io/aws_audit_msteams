@@ -13,6 +13,7 @@ import logging
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
 import boto3
+import datetime
 
 # X-ray instrumentation
 from aws_xray_sdk.core import xray_recorder
@@ -187,6 +188,7 @@ def handler(event, context):
     :param context: The context in which the function is called (unused)
     :return: Nothing.
     """
+    handler_start = datetime.datetime.now()
 
     #print("Event:\n"+str(event))
 
@@ -201,3 +203,7 @@ def handler(event, context):
             'body': json.dumps({'type': 'message', 'text': str(http_text)})
         }
     handle_scheduled_invocation()
+
+    handler_end = datetime.datetime.now()
+    print("Elapsed: " + str((handler_end - handler_start).total_seconds()) + " seconds")
+
