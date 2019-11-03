@@ -113,14 +113,28 @@ def get_box_status(boxes, status="running"):
     return box_list
 
 
-@xray_recorder.capture('abbreviate')
-def abbreviate(a_string):
+@xray_recorder.capture('abbreviate_name')
+def abbreviate_name(a_string, max_length):
+    """
+    Abbreviate a name to the first max_length - 3
+    Append ellipsis to the remainder
+    :param a_string: A string to be abbreviated
+    :param max_length: The max length the string can be.
+    :return: An abbreviated string
+    """
+    if len(a_string) > int(max_length):
+        return str(a_string[0:int(max_length-3)]+'...')
+    return a_string
+
+
+@xray_recorder.capture('abbreviate_id')
+def abbreviate_id(a_string):
     """
     1. Hack off the first 6 and the last 4 characters.
     2. Then join them with an ellipsis.
 
     :param a_string:
-    :return: An abbreviated string
+    :return: An abbreviated id string
     """
     return str(a_string[0:6]+'...'+a_string[-4::])
 
@@ -166,9 +180,9 @@ def print_instances(ec2):
                                       TYPE=('-' * (TYPE_LEN - 2))))
 
         for instance in get_sorted_vpc_entries_list(res):
-            fp.write(BODY_TEMPLATE.format(NAME=instance[0],
-                                          INST=abbreviate(instance[1]),
-                                          IMG=abbreviate(instance[2]),
+            fp.write(BODY_TEMPLATE.format(NAME=abbreviate_name(instance[0], NAME_LEN),
+                                          INST=abbreviate_id(instance[1]),
+                                          IMG=abbreviate_id(instance[2]),
                                           LAUNCHED=instance[3],
                                           TYPE=instance[4]))
     vpc_out = fp.getvalue()
