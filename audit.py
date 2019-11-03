@@ -5,7 +5,9 @@ Description:
  VPCs and workspaces
 
 """
-
+import base64
+import hashlib
+import hmac
 import json
 import logging
 from urllib.request import Request, urlopen
@@ -122,6 +124,58 @@ def get_regions():
     return region_list
 
 
+def event_is_legit(event):
+    """
+    Verify this event came from an MS Teams channel
+
+    :param event: The event passed to the handler
+    :return: boolean
+    """
+    security_token = bytes(get_systems_manager_parameter('rtt-aws-msteams-outgoing-hook-token'), 'utf-8')
+    msg_hmac_value = event['headers']['Authorization'].split(' ')[1]
+    # print("msg_hmac_value: " + msg_hmac_value)
+    request_data = bytes(event['body'], 'utf-8')
+    digest = hmac.new(base64.b64decode(security_token), msg=request_data, digestmod=hashlib.sha256).digest()
+    signature = base64.b64encode(digest).decode()
+    # print("signature: " + str(signature))
+    if str(msg_hmac_value) == str(signature):
+        return True
+
+    return False
+
+
+def gather_output_data():
+    out_data = ""
+    for region in get_regions():
+        client = boto3.client('ec2', region_name=region)
+        out_data += common.post_by_vpc(ec2=client)
+        out_data += common.print_unattached_volumes(region)
+        out_data += common.print_snapshots(client, region)
+        out_data += common.print_workspaces('AVAILABLE', region)
+
+    return out_data
+
+
+def handle_scheduled_invocation():
+    out_data = gather_output_data()
+    if out_data:
+        post_to_teams(out_data)
+    else:
+        print("Nothing to report")
+
+
+def handle_msteams_command(event):
+    if event_is_legit(event):
+        print("Event is legit query from MSTeams")
+        out_data = gather_output_data()
+        if not out_data:
+            out_data = "Nothing to report"
+    else:
+        out_data = "Invocation did not originate from MSTeams"
+
+    return out_data
+
+
 # noinspection PyUnusedLocal
 @xray_recorder.capture('handler')
 def handler(event, context):
@@ -136,18 +190,13 @@ def handler(event, context):
     print("Event:\n"+str(event))
 
     xray_recorder.current_subsegment().put_annotation('event', event)
-
     xray_recorder.current_subsegment().put_annotation('context', context)
 
-    out_data = ""
-    for region in get_regions():
-        client = boto3.client('ec2', region_name=region)
-        out_data += common.post_by_vpc(ec2=client)
-        out_data += common.print_unattached_volumes(region)
-        out_data += common.print_snapshots(client, region)
-        out_data += common.print_workspaces('AVAILABLE', region)
-
-    if out_data:
-        post_to_teams(out_data)
-    else:
-        print("Nothing to report")
+    if 'headers' in event:
+        http_text = handle_msteams_command(event)
+        return {
+            "statusCode": 200,
+            'headers': {'Content-Type': 'application/json'},
+            'body': json.dumps({'type': 'message', 'text': str(http_text)})
+        }
+    handle_scheduled_invocation()
