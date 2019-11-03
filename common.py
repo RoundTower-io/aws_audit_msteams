@@ -113,8 +113,8 @@ def get_box_status(boxes, status="running"):
     return box_list
 
 
-@xray_recorder.capture('post_by_vpc')
-def post_by_vpc(ec2):
+@xray_recorder.capture('print_instances')
+def print_instances(ec2):
     """
     Print out VPC information in a pretty format
 

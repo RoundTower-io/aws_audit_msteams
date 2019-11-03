@@ -24,11 +24,6 @@ Resources:
           Type: Schedule
           Properties:
             Schedule: cron(0 21 ? * * *)
-        HttpPost:
-          Type: Api
-          Properties:
-            Path: '/status'
-            Method: any
 
 
   CloudWatchFunction:
