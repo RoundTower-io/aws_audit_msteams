@@ -18,7 +18,7 @@ from aws_xray_sdk.core import patch
 patch(['boto3'])
 
 NAME_LEN = 20
-INST_LEN = 14
+INST_LEN = 16
 IMG_LEN = 16
 LAUNCHED_LEN = 14
 TYPE_LEN = 12
