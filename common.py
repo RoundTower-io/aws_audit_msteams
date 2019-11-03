@@ -116,14 +116,14 @@ def get_box_status(boxes, status="running"):
 @xray_recorder.capture('abbreviate_name')
 def abbreviate_name(a_string, max_length):
     """
-    Abbreviate a name to the first max_length - 3
+    Abbreviate a name to the first max_length - 5
     Append ellipsis to the remainder
     :param a_string: A string to be abbreviated
     :param max_length: The max length the string can be.
     :return: An abbreviated string
     """
     if len(a_string) > int(max_length):
-        return str(a_string[0:int(max_length-3)]+'...')
+        return str(a_string[0:int(max_length-5)]+'...')
     return a_string
 
 
