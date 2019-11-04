@@ -2,14 +2,6 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
 Resources:
 
-  SnsTopic:
-    Type: 'AWS::SNS::Topic'
-    Properties:
-      Subscription:
-        - Endpoint: tennis.smith@roundtower.com
-          Protocol: email
-      TopicName: alarm-action
-
   ServerlessFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -19,28 +11,11 @@ Resources:
       Runtime: python3.7
       Timeout: 900
       Role: 'arn:aws:iam::375301133253:role/lambda_aws_audit_execution_role'
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: 'arn:aws:sns:us-east-2:375301133253:alarm-action'
       Events:
         SetAuditTrigger:
           Type: Schedule
           Properties:
             Schedule: cron(0 21 ? * * *)
-
-
-  CloudWatchFunction:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      AlarmName: "AuditFunctionErrors"
-      AlarmDescription: "Alarm if lambda errors out too many times"
-      Namespace: "AWS/Lambda"
-      MetricName: "Errors"
-      Dimensions:
-        - Name: "FunctionName"
-          Value: "audit"
-      Statistic: "Sum"
-      ComparisonOperator: "GreaterThanThreshold"
-      Threshold: 0
-      EvaluationPeriods: 5
-      Period: 60
-      TreatMissingData: "ignore"
-      AlarmActions:
-        - Ref: SnsTopic
