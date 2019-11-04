@@ -2,6 +2,14 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
 Resources:
 
+  SnsTopic:
+    Type: 'AWS::SNS::Topic'
+    Properties:
+      Subscription:
+        - Endpoint: tennis.smith@roundtower.com
+          Protocol: email
+      TopicName: alarm-on-audit-lambda-error-action
+
   ServerlessFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -13,7 +21,7 @@ Resources:
       Role: 'arn:aws:iam::375301133253:role/lambda_aws_audit_execution_role'
       DeadLetterQueue:
         Type: SNS
-        TargetArn: 'arn:aws:sns:us-east-2:375301133253:alarm-action'
+        TargetArn: !Ref SnsTopic
       Events:
         SetAuditTrigger:
           Type: Schedule
