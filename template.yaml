@@ -32,6 +32,7 @@ Resources:
                 Action:
                   - "ec2:*"
                   - "workspaces:*"
+                  - "ssm:*"
                 Resource: "*"
               - Effect: "Allow"
                 Action:
