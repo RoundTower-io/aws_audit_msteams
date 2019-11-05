@@ -10,6 +10,35 @@ Resources:
           Protocol: email
       TopicName: alarm-on-audit-lambda-error-action
 
+  AwsDailyAuditRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        - PolicyName: "AwsDailyAuditPolicy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "ec2:*"
+                Resource: "*"
+              - Effect: "Allow"
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: "arn:aws:logs:*:*:*"
+
   AwsDailyAuditFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -18,7 +47,7 @@ Resources:
       CodeUri: ./
       Runtime: python3.7
       Timeout: 900
-      Role: 'arn:aws:iam::375301133253:role/lambda_aws_audit_execution_role'
+      Role: !Ref AwsDailyAuditRole
       DeadLetterQueue:
         Type: SNS
         TargetArn: !Ref SnsTopic
