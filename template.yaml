@@ -47,7 +47,10 @@ Resources:
       CodeUri: ./
       Runtime: python3.7
       Timeout: 900
-      Role: !Ref AwsDailyAuditRole
+      Role:
+        Fn::GetAtt:
+          - "AwsDailyAuditRole"
+          - "Arn"
       DeadLetterQueue:
         Type: SNS
         TargetArn: !Ref SnsTopic
