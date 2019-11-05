@@ -48,6 +48,8 @@ Resources:
       CodeUri: ./
       Runtime: python3.7
       Timeout: 900
+      Description: Daily audit of AWS resources forwarded to  MS Teams
+      MemorySize: 512
       Role:
         Fn::GetAtt:
           - "AwsDailyAuditRole"
