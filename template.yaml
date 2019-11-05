@@ -26,4 +26,4 @@ Resources:
         SetAuditTrigger:
           Type: Schedule
           Properties:
-            Schedule: cron(0 21 ? * * *)
+            Schedule: cron(0 22 ? * * *)
