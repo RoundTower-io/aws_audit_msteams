@@ -23,8 +23,8 @@ patch(['boto3'])
 
 AWS_HOME_REGION = 'us-east-2'
 AWS_SYSTEMS_MANAGER_PARM = "rtt-audit-output-teams-channel"
-# UN-comment line below for debug
-#AWS_SYSTEMS_MANAGER_PARM = "rtt-audit-output-test-channel"
+# line below for debug
+AWS_SYSTEMS_MANAGER_PARM_TEST = "rtt-audit-output-test-channel"
 
 LOGGER = logging.getLogger()
 LOGGER.setLevel(logging.INFO)
@@ -59,10 +59,11 @@ def get_systems_manager_parameter(param_name):
 
 
 @xray_recorder.capture('post_to_teams')
-def post_to_teams(msg):
+def post_to_teams(msg, destination):
     """
     Post the given message to a pre-defined MS Teams channel
 
+    :param destination: The destination Teams channel for our output
     :param msg: The message to be posted
     :return: Nothing
     """
@@ -83,7 +84,7 @@ def post_to_teams(msg):
     # This allows us to make the repo public without compromising security
     #
     # Comment out line below for debug
-    hook_url = get_systems_manager_parameter(AWS_SYSTEMS_MANAGER_PARM)
+    hook_url = get_systems_manager_parameter(destination)
 
     xray_recorder.current_subsegment().put_annotation('hook_url', hook_url)
 
@@ -141,14 +142,15 @@ def gather_output_data():
 
 
 @xray_recorder.capture('handle_scheduled_invocation')
-def handle_scheduled_invocation():
+def handle_scheduled_invocation(destination):
     """
     Collect output data and send it to MS Teams webhook
+    :param destination: The destination Teams channel for our output
     :return: nothing
     """
     out_data = gather_output_data()
     if out_data:
-        post_to_teams(out_data)
+        post_to_teams(out_data, destination)
     else:
         print("Nothing to report")
 
@@ -166,4 +168,11 @@ def handler(event, context):
     #print("Event:\n"+str(event))
     xray_recorder.current_subsegment().put_annotation('event', event)
     xray_recorder.current_subsegment().put_annotation('context', context)
-    handle_scheduled_invocation()
+
+    # Lambda test data of type "Schedule" will have a 1970 timestamp
+    if event['time'] == "1970-01-01T00:00:00Z":
+        destination = "rtt-audit-output-test-channel"
+    else:
+        destination = "rtt-audit-output-teams-channel"
+
+    handle_scheduled_invocation(destination)
