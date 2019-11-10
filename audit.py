@@ -22,9 +22,6 @@ import common
 patch(['boto3'])
 
 AWS_HOME_REGION = 'us-east-2'
-AWS_SYSTEMS_MANAGER_PARM = "rtt-audit-output-teams-channel"
-# line below for debug
-AWS_SYSTEMS_MANAGER_PARM_TEST = "rtt-audit-output-test-channel"
 
 LOGGER = logging.getLogger()
 LOGGER.setLevel(logging.INFO)
