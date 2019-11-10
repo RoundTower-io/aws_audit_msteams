@@ -131,10 +131,11 @@ def gather_output_data():
     for region in get_regions():
         print("Handling region: " + region)
         client = boto3.client('ec2', region_name=region)
-        out_data += common.print_instances(ec2=client)
+        out_data += common.print_instances(client)
         out_data += common.print_unattached_volumes(region)
         out_data += common.print_snapshots(client, region)
         out_data += common.print_workspaces('AVAILABLE', region)
+        out_data += common.print_elastic_ips(client, region)
 
     return out_data
 

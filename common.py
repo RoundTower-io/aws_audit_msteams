@@ -291,3 +291,29 @@ def print_snapshots(ec2, region):
     if not found:
         return ""
     return sn_out
+
+
+@xray_recorder.capture('print_elastic_ips')
+def print_elastic_ips(ec2, region):
+    """
+    Print a list of UN-attached Elastic IP addresses
+
+    :param ec2: The boto3 ec2 client
+    :param region: The region to search in
+    :return: The nicely formatted list of EIPs to print
+    """
+    addresses_dict = ec2.describe_addresses()
+    found = 0
+    fp = StringIO()
+    fp.write('\n')
+    fp.write('UN-attached Elastic IPs in %s\n' % region)
+    fp.write('----------------------------------\n')
+    for eip_dict in addresses_dict['Addresses']:
+        if "InstanceId" not in eip_dict:
+            fp.write(str(eip_dict['PublicIp']) + "  ")
+            found += 1
+    eip_out = fp.getvalue()
+    fp.close()
+    if not found:
+        return ""
+    return eip_out
