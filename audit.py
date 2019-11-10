@@ -168,8 +168,10 @@ def handler(event, context):
 
     # Lambda test data of type "Schedule" will have a 1970 timestamp
     if event['time'] == "1970-01-01T00:00:00Z":
+        print("Test data passed")
         destination = "rtt-audit-output-test-channel"
     else:
+        print("Scheduled invocation")
         destination = "rtt-audit-output-teams-channel"
 
     handle_scheduled_invocation(destination)
