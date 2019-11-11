@@ -305,7 +305,7 @@ def print_elastic_ips(ec2, region):
     addresses_dict = ec2.describe_addresses()
     found = 0
     fp = StringIO()
-    fp.write('\n')
+    fp.write('\n\n')
     fp.write('UN-attached Elastic IPs in %s\n' % region)
     fp.write('----------------------------------\n')
     for eip_dict in addresses_dict['Addresses']:
