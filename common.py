@@ -66,7 +66,7 @@ def get_sorted_vpc_list(vpcs):
 
         vpc = v['VpcId']
 
-        assert vname is not None
+        assert vname
         vpc_list.append([vname, vpc])
 
     return sorted(vpc_list)
