@@ -53,6 +53,7 @@ def get_sorted_vpc_list(vpcs):
     :return: A sorted list of VPCs
     """
     vpc_list = []
+    vname = ''
     for v in vpcs['Vpcs']:
         if v['IsDefault']:
             vname = 'Default'

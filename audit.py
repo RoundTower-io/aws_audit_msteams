@@ -166,8 +166,7 @@ def handler(event, context):
     xray_recorder.current_subsegment().put_annotation('event', event)
     xray_recorder.current_subsegment().put_annotation('context', context)
 
-    request_type = event["RequestType"]
-    print("Request type is: " + str(request_type))
+    print(event)
 
     # Lambda test data of type "Schedule" will have a 1970 timestamp
     if event['time'] == "1970-01-01T00:00:00Z":
