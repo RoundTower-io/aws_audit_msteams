@@ -162,7 +162,7 @@ def handler(event, context):
     :param context: The context in which the function is called (unused)
     :return: Nothing.
     """
-    #print("Event:\n"+str(event))
+    print("Event:\n"+str(event))
     xray_recorder.current_subsegment().put_annotation('event', event)
     xray_recorder.current_subsegment().put_annotation('context', context)
 
