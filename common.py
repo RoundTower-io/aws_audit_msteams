@@ -53,7 +53,7 @@ def get_sorted_vpc_list(vpcs):
     :return: A sorted list of VPCs
     """
     vpc_list = []
-    vname = ''
+    vname = 'UNKNOWN'
     for v in vpcs['Vpcs']:
         if v['IsDefault']:
             vname = 'Default'
@@ -62,8 +62,6 @@ def get_sorted_vpc_list(vpcs):
             for vt in vtags:
                 if isinstance(vt, dict) and vt['Key'] == 'Name':
                     vname = vt['Value']
-        else:
-            vname = 'UNKNOWN'
 
         vpc = v['VpcId']
 
